@@ -26,7 +26,7 @@ class Muter(commands.Cog):
 
     def cog_unload(self):
         self.read_database.cancel()
-        self.mutes.delete_many({'user_id': 473350400054001666})
+        self.mutes.delete_many({})
 
     @tasks.loop(seconds=1)
     async def read_database(self):
@@ -40,6 +40,7 @@ class Muter(commands.Cog):
                 member = guild.get_member(user_id=user['user_id'])
                 role = discord.utils.get(member.guild.roles, name="Muted")
                 await member.remove_roles(role)
+                self.mutes.delete_one(user)
                 await channel.send(f'Time limit reached! Unmuting <@!{user["user_id"]}>...')
 
     @read_database.before_loop
